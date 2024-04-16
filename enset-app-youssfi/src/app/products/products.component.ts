@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {ProductService} from "../services/product.service";
 
 @Component({
   selector: 'app-products',
@@ -8,16 +9,30 @@ import {HttpClient} from "@angular/common/http";
 })
 export class ProductsComponent implements OnInit{
 
-  constructor(private http:HttpClient) {
+  constructor(private productService:ProductService) {
   }
 
 
   products : Array<any> = [];
 
   handleCheckProduct(product: any) {
-    product.checked=!product.checked
+   this.productService.checkProduct(product)
+       .subscribe({
+           next : updatedproduct =>{
+               product.checked=!product.checked;
+           }
+       });
   }
 
   ngOnInit(): void {
+    this.productService.getProducts()
+        .subscribe({
+          next: data => {
+            this.products = data
+          },
+          error: err=>{
+            console.log(err);
+          }
+        })
   }
 }
